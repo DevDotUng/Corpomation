@@ -1,0 +1,27 @@
+cloud:
+  aws:
+    s3:
+      bucket: insurance-bung
+    stack.auto: false
+    region.static: ap-northeast-2
+    credentials:
+      accessKey:
+      secretKey:
+
+spring:
+  application:
+    name: corpomation
+  jpa:
+    properties:
+      hibernate:
+        format_sql: 'true'
+    hibernate:
+      ddl-auto: create
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+        orm:
+          jdbc:
+            bind: trace
