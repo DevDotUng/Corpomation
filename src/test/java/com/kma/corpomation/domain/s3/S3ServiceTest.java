@@ -4,22 +4,26 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.kma.corpomation.ApiTest;
+import com.kma.corpomation.domain.s3.service.S3Service;
 import com.kma.corpomation.util.StubData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
-public class ControllerTest extends ApiTest {
+public class S3ServiceTest extends ApiTest {
+
+    @Autowired
+    private S3Service s3Service;
 
     @Autowired
     private MockMvc mockMvc;
@@ -27,18 +31,30 @@ public class ControllerTest extends ApiTest {
     @Autowired
     private AmazonS3Client amazonS3Client;
 
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
+
     @BeforeEach
     void beforeEach() {
         given(amazonS3Client.putObject(any(PutObjectRequest.class))).willReturn(new PutObjectResult());
+        given(amazonS3Client.doesObjectExist(any(), any())).willReturn(true);
+        doNothing().when(amazonS3Client).deleteObject(any(), any());
     }
 
     @Test
-    void 이미지_등록() throws Exception {
+    void upload() throws Exception {
         MockMultipartFile file = StubData.createMockMultipartFile();
+        String fileUrl = s3Service.upload(file);
 
-        mockMvc.perform(
-                multipart("/upload")
-                        .file(file)
-        ).andExpect(status().isOk());
+        assertThat(fileUrl).isEqualTo("https://" + bucket + "/file/testFile.pdf");
+    }
+
+    @Test
+    void delete() throws Exception {
+        MockMultipartFile file = StubData.createMockMultipartFile();
+        String fileName = file.getOriginalFilename();
+        String name = s3Service.delete(fileName);
+
+        assertThat(name).isEqualTo("testFile.pdf");
     }
 }
