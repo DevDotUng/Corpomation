@@ -4,6 +4,7 @@ import com.kma.corpomation.domain.admin.dto.FileResponse;
 import com.kma.corpomation.domain.admin.dto.UploadRequest;
 import com.kma.corpomation.domain.admin.entity.BusinessFile;
 import com.kma.corpomation.domain.admin.repository.FileRepository;
+import com.kma.corpomation.domain.s3.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +17,13 @@ public class FileService {
     @Autowired
     private FileRepository fileRepository;
 
+    @Autowired
+    private S3Service s3Service;
+
     public BusinessFile uploadFile(UploadRequest uploadRequest) {
-        BusinessFile file = new BusinessFile(uploadRequest.getManager(), uploadRequest.getBusiness(), uploadRequest.getFileUrl());
+        String fileUrl = s3Service.upload(uploadRequest.getFile());
+
+        BusinessFile file = new BusinessFile(uploadRequest.getManager(), uploadRequest.getBusiness(), fileUrl);
         BusinessFile businessFile = fileRepository.save(file);
 
         return businessFile;
