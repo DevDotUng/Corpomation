@@ -5,24 +5,32 @@ import com.kma.corpomation.domain.admin.dto.FileResponse;
 import com.kma.corpomation.domain.admin.dto.UploadRequest;
 import com.kma.corpomation.domain.admin.entity.BusinessFile;
 import com.kma.corpomation.domain.admin.service.FileService;
+import com.kma.corpomation.util.StubData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mock.web.MockMultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class FileServiceTest extends ApiTest {
 
+    private BusinessFile businessFile;
+
     @Autowired
     private FileService fileService;
 
-    private BusinessFile businessFile;
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
     @BeforeEach
-    void beforeEach() {
-        businessFile = fileService.uploadFile(new UploadRequest("manager", "business", "fileUrl"));
+    void beforeEach() throws IOException {
+        MockMultipartFile file = StubData.createMockMultipartFile();
+        businessFile = fileService.uploadFile(new UploadRequest("manager", "business", file));
     }
 
     @Test
@@ -30,7 +38,7 @@ public class FileServiceTest extends ApiTest {
         assertThat(businessFile.getId()).isEqualTo(1);
         assertThat(businessFile.getManager()).isEqualTo("manager");
         assertThat(businessFile.getBusiness()).isEqualTo("business");
-        assertThat(businessFile.getFileUrl()).isEqualTo("fileUrl");
+        assertThat(businessFile.getFileUrl()).isEqualTo("https://" + bucket + "/file/testFile.pdf");
         assertThat(businessFile.getCreateAt()).isNotNull();
     }
 
@@ -40,9 +48,10 @@ public class FileServiceTest extends ApiTest {
     }
 
     @Test
-    void getFiles() {
-        fileService.uploadFile(new UploadRequest("manager", "business", "fileUrl"));
-        fileService.uploadFile(new UploadRequest("manager", "business", "fileUrl"));
+    void getFiles() throws IOException {
+        MockMultipartFile file = StubData.createMockMultipartFile();
+        fileService.uploadFile(new UploadRequest("manager", "business", file));
+        fileService.uploadFile(new UploadRequest("manager", "business", file));
 
         List<FileResponse> fileResponseList = fileService.getFiles();
 
