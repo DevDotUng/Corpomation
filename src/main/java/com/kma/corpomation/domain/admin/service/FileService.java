@@ -30,6 +30,11 @@ public class FileService {
     }
 
     public void deleteFile(Long id) {
+        BusinessFile businessFile = fileRepository.findById(id).get();
+        String[] splitFileUrl = businessFile.getFileUrl().split("/");
+        String fileName = splitFileUrl[splitFileUrl.length - 1];
+
+        s3Service.delete(fileName);
         fileRepository.deleteById(id);
     }
 
