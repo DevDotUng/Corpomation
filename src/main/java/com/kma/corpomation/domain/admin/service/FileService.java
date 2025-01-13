@@ -24,8 +24,19 @@ public class FileService {
     public BusinessFile uploadFile(UploadRequest uploadRequest) {
         String fileUrl = s3Service.upload(uploadRequest.getFile());
 
-        BusinessFile file = new BusinessFile(uploadRequest.getManager(), uploadRequest.getBusiness(), fileUrl);
-        BusinessFile businessFile = fileRepository.save(file);
+        BusinessFile businessFile = fileRepository.findByManagerAndBusiness(uploadRequest.getManager(), uploadRequest.getBusiness());
+
+        if (businessFile != null) {
+            String[] splitFileUrl = businessFile.getFileUrl().split("/");
+            String fileName = splitFileUrl[splitFileUrl.length - 1];
+
+            s3Service.delete(fileName);
+
+            businessFile.setFileUrl(fileUrl);
+            businessFile = fileRepository.save(businessFile);
+        } else {
+            businessFile = fileRepository.save(new BusinessFile(uploadRequest.getManager(), uploadRequest.getBusiness(), fileUrl));
+        }
 
         return businessFile;
     }
