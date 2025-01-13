@@ -22,7 +22,6 @@ public class AdminController {
         List<FileResponse> fileResponseList = fileService.getFiles();
 
         model.addAttribute("files", fileResponseList);
-        System.out.println("length = " + fileResponseList.size());
 
         return "index";
     }
