@@ -23,12 +23,12 @@ public class FileRepositoryTest extends ApiTest {
     void existsByManagerAndBusiness() {
         fileRepository.save(new BusinessFile("manager", "business", "fileUrl"));
 
-        boolean exists = fileRepository.existsByManagerAndBusiness("manager", "business");
-        boolean notExistsManager = fileRepository.existsByManagerAndBusiness("business", "business");
-        boolean notExistsBusiness = fileRepository.existsByManagerAndBusiness("manager", "manager");
+        BusinessFile businessFile = fileRepository.findByManagerAndBusiness("manager", "business");
+        BusinessFile businessFileNotEqualsManager = fileRepository.findByManagerAndBusiness("business", "business");
+        BusinessFile businessFileNotEqualsBusiness = fileRepository.findByManagerAndBusiness("manager", "manager");
 
-        assertThat(exists).isTrue();
-        assertThat(notExistsManager).isFalse();
-        assertThat(notExistsBusiness).isFalse();
+        assertThat(businessFile).isNotNull();
+        assertThat(businessFileNotEqualsManager).isNull();
+        assertThat(businessFileNotEqualsBusiness).isNull();
     }
 }
