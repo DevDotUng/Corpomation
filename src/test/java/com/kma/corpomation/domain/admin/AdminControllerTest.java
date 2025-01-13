@@ -29,7 +29,7 @@ public class AdminControllerTest extends ApiTest {
 
     @Test
     void upload() throws Exception {
-        MockMultipartFile mockMultipartFile = StubData.createMockMultipartFile();
+        MockMultipartFile mockMultipartFile = StubData.createMockMultipartFile("testFile");
 
         mockMvc.perform(multipart("/upload")
                 .file(mockMultipartFile)
@@ -40,7 +40,7 @@ public class AdminControllerTest extends ApiTest {
 
     @Test
     void delete() throws Exception {
-        MockMultipartFile mockMultipartFile = StubData.createMockMultipartFile();
+        MockMultipartFile mockMultipartFile = StubData.createMockMultipartFile("testFile");
 
         mockMvc.perform(multipart("/upload")
                 .file(mockMultipartFile)
