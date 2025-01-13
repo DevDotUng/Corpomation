@@ -34,6 +34,9 @@ public class S3ServiceTest extends ApiTest {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    @Value("${cloud.aws.region.static}")
+    private String region;
+
     @BeforeEach
     void beforeEach() {
         given(amazonS3Client.putObject(any(PutObjectRequest.class))).willReturn(new PutObjectResult());
@@ -43,15 +46,15 @@ public class S3ServiceTest extends ApiTest {
 
     @Test
     void upload() throws Exception {
-        MockMultipartFile file = StubData.createMockMultipartFile();
+        MockMultipartFile file = StubData.createMockMultipartFile("testFile");
         String fileUrl = s3Service.upload(file);
 
-        assertThat(fileUrl).isEqualTo("https://" + bucket + "/file/testFile.pdf");
+        assertThat(fileUrl).isEqualTo("https://" + bucket + ".s3." + region + ".amazonaws.com/testFile.pdf");
     }
 
     @Test
     void delete() throws Exception {
-        MockMultipartFile file = StubData.createMockMultipartFile();
+        MockMultipartFile file = StubData.createMockMultipartFile("testFile");
         String fileName = file.getOriginalFilename();
         String name = s3Service.delete(fileName);
 
