@@ -32,17 +32,26 @@ public class FileServiceTest extends ApiTest {
 
     @BeforeEach
     void beforeEach() throws IOException {
-        MockMultipartFile file = StubData.createMockMultipartFile();
+        MockMultipartFile file = StubData.createMockMultipartFile("testFile");
         businessFile = fileService.uploadFile(new UploadRequest("manager", "business", file));
     }
 
     @Test
-    void uploadFile() {
+    void uploadFile() throws IOException {
         assertThat(businessFile.getId()).isEqualTo(1);
         assertThat(businessFile.getManager()).isEqualTo("manager");
         assertThat(businessFile.getBusiness()).isEqualTo("business");
         assertThat(businessFile.getFileUrl()).isEqualTo("https://" + bucket + ".s3." + region + ".amazonaws.com/testFile.pdf");
         assertThat(businessFile.getCreateAt()).isNotNull();
+
+        MockMultipartFile fileEqualsManagerAndBusiness = StubData.createMockMultipartFile("testFile2");
+        BusinessFile businessFileEqualsManagerAndBusiness = fileService.uploadFile(new UploadRequest("manager", "business", fileEqualsManagerAndBusiness));
+
+        assertThat(businessFileEqualsManagerAndBusiness.getId()).isEqualTo(1);
+        assertThat(businessFileEqualsManagerAndBusiness.getManager()).isEqualTo("manager");
+        assertThat(businessFileEqualsManagerAndBusiness.getBusiness()).isEqualTo("business");
+        assertThat(businessFileEqualsManagerAndBusiness.getFileUrl()).isEqualTo("https://" + bucket + ".s3." + region + ".amazonaws.com/testFile2.pdf");
+        assertThat(businessFileEqualsManagerAndBusiness.getCreateAt()).isNotNull();
     }
 
     @Test
@@ -52,9 +61,9 @@ public class FileServiceTest extends ApiTest {
 
     @Test
     void getFiles() throws IOException {
-        MockMultipartFile file = StubData.createMockMultipartFile();
-        fileService.uploadFile(new UploadRequest("manager", "business", file));
-        fileService.uploadFile(new UploadRequest("manager", "business", file));
+        MockMultipartFile file = StubData.createMockMultipartFile("testFile");
+        fileService.uploadFile(new UploadRequest("manager", "business1", file));
+        fileService.uploadFile(new UploadRequest("manager", "business2", file));
 
         List<FileResponse> fileResponseList = fileService.getFiles();
 
