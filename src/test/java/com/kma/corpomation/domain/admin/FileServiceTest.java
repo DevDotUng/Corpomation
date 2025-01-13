@@ -27,6 +27,9 @@ public class FileServiceTest extends ApiTest {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    @Value("${cloud.aws.region.static}")
+    private String region;
+
     @BeforeEach
     void beforeEach() throws IOException {
         MockMultipartFile file = StubData.createMockMultipartFile();
@@ -38,7 +41,7 @@ public class FileServiceTest extends ApiTest {
         assertThat(businessFile.getId()).isEqualTo(1);
         assertThat(businessFile.getManager()).isEqualTo("manager");
         assertThat(businessFile.getBusiness()).isEqualTo("business");
-        assertThat(businessFile.getFileUrl()).isEqualTo("https://" + bucket + "/file/testFile.pdf");
+        assertThat(businessFile.getFileUrl()).isEqualTo("https://" + bucket + ".s3." + region + ".amazonaws.com/testFile.pdf");
         assertThat(businessFile.getCreateAt()).isNotNull();
     }
 
