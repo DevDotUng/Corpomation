@@ -94,6 +94,20 @@
             background-color: #e67e22;
         }
 
+        .delete-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: var(--secondary-color);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
         .file-list {
             list-style-type: none;
             padding: 0;
@@ -182,8 +196,10 @@
     <div class="instructions">
         <h3>사용 방법</h3>
         <ol>
+            <li>구글 스프레드시트 -> 파일 -> 다운로드 -> PDF로 파일을 다운로드받으세요.</li>
             <li>파일 선택 버튼을 클릭하여 업로드할 파일을 선택하세요.</li>
-            <li>선택적으로, 파일의 사용자 지정 이름을 입력할 수 있습니다. 입력하지 않으면 원본 파일 이름이 사용됩니다.</li>
+            <li>담당자명과 사업명을 입력해야 합니다. 입력하지 않으면 업로드되지 않습니다.</li>
+            <li>담당자명과 사업명이 모두 같을 경우 파일이 덮어쓰기 됩니다.</li>
             <li>업로드 버튼을 클릭하여 파일을 서버에 업로드하세요.</li>
             <li>업로드된 파일 목록에서 파일을 다운로드하거나 삭제할 수 있습니다.</li>
         </ol>
@@ -192,7 +208,7 @@
     <div th:if="${message}" th:class="${'message ' + (message.contains('성공') ? 'success' : 'error')}" th:text="${message}"></div>
 
     <div class="upload-form">
-        <form th:action="@{/upload}" method="post" enctype="multipart/form-data">
+        <form th:action="@{/upload}" method="POST" enctype="multipart/form-data">
             <div class="form-group">
                 <input type="file" name="file" id="file" class="file-input" required>
                 <label for="file" class="file-label">파일 선택</label>
@@ -212,13 +228,23 @@
     <ul class="file-list">
         <li th:each="file : ${files}" class="file-item fade-in">
             <div class="file-info">
-                <span class="file-name" th:text="${file.name}"></span>
-                <span class="file-custom-name" th:text="${file.customName != null ? '(' + file.customName + ')' : ''}"></span>
+                <span class="file-name" th:text="${file.manager}"></span>
             </div>
-            <div class="file-actions">
-                <a th:href="@{'/download/' + ${file.name}}">다운로드</a>
-                <a th:href="@{'/delete/' + ${file.name}}" class="delete-file">삭제</a>
+            <div class="file-info">
+                <span class="file-name" th:text="${file.business}"></span>
             </div>
+            <div class="file-info">
+                <span class="file-name" th:text="'파일 보기'" th:attr="onclick=|window.open('${file.fileUrl}')|" style="cursor: pointer; color: blue; text-decoration: underline;"></span>
+            </div>
+            <div class="file-info">
+                <span class="file-name" th:text="${file.createAt}"></span>
+            </div>
+<!--            <form action="#" th:action="'/' + ${file.id}" method="#" th:method="DELETE">-->
+<!--                <button type="submit" class="delete-btn">삭제</button>-->
+<!--            </form>-->
+            <form action="#" th:action="'/' + ${file.id}" method="#" th:method="DELETE" class="delete-form">
+                <button type="submit" class="delete-btn">삭제</button>
+            </form>
         </li>
     </ul>
 </div>
@@ -226,34 +252,22 @@
 <script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function() {
         const fileInput = document.getElementById('file');
-        const fileLabel = document.querySelector('.file-label');
         const fileName = document.querySelector('.file-name');
-        const customNameInput = document.getElementById('customName');
 
         fileInput.addEventListener('change', function() {
             if (this.files && this.files.length > 0) {
                 fileName.textContent = this.files[0].name;
-                if (!customNameInput.value) {
-                    customNameInput.value = this.files[0].name.split('.').slice(0, -1).join('.');
-                }
             } else {
                 fileName.textContent = '';
             }
         });
 
-        document.querySelectorAll('.delete-file').forEach(function(link) {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                if (confirm('정말로 이 파일을 삭제하시겠습니까?')) {
-                    window.location.href = this.getAttribute('href');
+        document.querySelectorAll('.delete-form').forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                if (!confirm('정말로 이 파일을 삭제하시겠습니까?')) {
+                    event.preventDefault();
                 }
             });
-        });
-
-        // Add fade-in effect to newly uploaded files
-        const fileItems = document.querySelectorAll('.file-item');
-        fileItems.forEach(function(item, index) {
-            item.style.animationDelay = (index * 0.1) + 's';
         });
     });
 </script>
