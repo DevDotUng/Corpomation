@@ -34,9 +34,6 @@ public class User {
     @Column(nullable = false)
     private UserRole userRole;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
-    private Token token;
-
     @CreationTimestamp
     private LocalDateTime createAt;
 

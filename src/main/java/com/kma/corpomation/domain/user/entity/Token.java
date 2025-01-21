@@ -21,15 +21,13 @@ public class Token {
     @Column(nullable = false)
     private String refreshToken;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Token(User user, String accessToken, String refreshToken) {
-        Assert.notNull(user, "유저는 필수입니다.");
+    public Token(String accessToken, String refreshToken) {
         Assert.hasText(accessToken, "Access Token은 필수입니다.");
         Assert.hasText(refreshToken, "Refresh Token은 필수입니다.");
-        this.user = user;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }
