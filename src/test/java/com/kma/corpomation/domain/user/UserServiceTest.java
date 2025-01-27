@@ -5,6 +5,7 @@ import com.kma.corpomation.domain.user.dto.*;
 import com.kma.corpomation.domain.user.entity.User;
 import com.kma.corpomation.domain.user.repository.UserRepository;
 import com.kma.corpomation.domain.user.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -13,17 +14,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserServiceTest extends ApiTest {
 
+    private RegisterRequest registerRequest;
+    private RegisterResponse registerResponse;
+
     @Autowired
     private UserService userService;
 
     @Autowired
     private UserRepository userRepository;
 
+    @BeforeEach
+    void beforeEach() {
+        registerRequest = new RegisterRequest("user", "email@naver.com", "1234", UserRole.USER);
+        registerResponse = userService.register(registerRequest);
+    }
+
     @Test
     void register() {
-        RegisterRequest registerRequest = new RegisterRequest("user", "email@naver.com", "1234", UserRole.USER);
-        RegisterResponse registerResponse = userService.register(registerRequest);
-
         User user = userRepository.findByEmail("email@naver.com").get();
 
         Assert.hasText(registerResponse.getAccessToken(), "엑세스 토큰이 없습니다.");
@@ -36,9 +43,6 @@ public class UserServiceTest extends ApiTest {
 
     @Test
     void login() throws Exception {
-        RegisterRequest registerRequest = new RegisterRequest("user", "email@naver.com", "1234", UserRole.USER);
-        userService.register(registerRequest);
-
         LoginRequest loginRequest = new LoginRequest("email@naver.com", "1234");
         LoginResponse loginResponse = userService.login(loginRequest);
 
