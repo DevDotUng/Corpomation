@@ -43,7 +43,7 @@ public class UserService {
         String accessToken = jwtGenerator.generateAccessToken(jwtUtil.getSigningKey(ACCESS_SECRET_KEY), ACCESS_EXPIRATION, user);
         String refreshToken = jwtGenerator.generateRefreshToken(jwtUtil.getSigningKey(REFRESH_SECRET_KEY), REFRESH_EXPIRATION, user);
 
-        saveToken(savedUser, accessToken, refreshToken);
+        saveToken(accessToken, refreshToken);
 
         return new RegisterResponse(accessToken, refreshToken);
     }
@@ -59,12 +59,12 @@ public class UserService {
         String accessToken = jwtGenerator.generateAccessToken(jwtUtil.getSigningKey(ACCESS_SECRET_KEY), ACCESS_EXPIRATION, user);
         String refreshToken = jwtGenerator.generateRefreshToken(jwtUtil.getSigningKey(REFRESH_SECRET_KEY), REFRESH_EXPIRATION, user);
 
-        saveToken(user, accessToken, refreshToken);
+        saveToken(accessToken, refreshToken);
 
         return new LoginResponse(accessToken, refreshToken);
     }
 
-    private void saveToken(User user, String accessToken, String refreshToken) {
+    private void saveToken(String accessToken, String refreshToken) {
         Token token = new Token(accessToken, refreshToken);
 
         tokenRepository.save(token);
