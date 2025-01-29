@@ -38,7 +38,7 @@ public class UserService {
     public RegisterResponse register(RegisterRequest registerRequest) {
         User user = new User(registerRequest.getUsername(), registerRequest.getEmail(), registerRequest.getPassword(), registerRequest.getUserRole());
 
-        User savedUser = userRepository.save(user);
+        userRepository.save(user);
 
         String accessToken = jwtGenerator.generateAccessToken(jwtUtil.getSigningKey(ACCESS_SECRET_KEY), ACCESS_EXPIRATION, user);
         String refreshToken = jwtGenerator.generateRefreshToken(jwtUtil.getSigningKey(REFRESH_SECRET_KEY), REFRESH_EXPIRATION, user);
