@@ -13,26 +13,15 @@ import java.util.Map;
 @Component
 public class JwtGenerator {
 
-    public String generateAccessToken(final Key ACCESS_SECRET, final long ACCESS_EXPIRATION, User user) {
+    public String generateToken(final Key SECRET, final long EXPIRATION, User user) {
         Long now = System.currentTimeMillis();
 
         return Jwts.builder()
                 .setHeader(createHeader())
                 .setClaims(createClaims(user))
                 .setSubject(String.valueOf(user.getId()))
-                .setExpiration(new Date(now + ACCESS_EXPIRATION))
-                .signWith(ACCESS_SECRET, SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    public String generateRefreshToken(final Key REFRESH_SECRET, final long REFRESH_EXPIRATION, User user) {
-        Long now = System.currentTimeMillis();
-
-        return Jwts.builder()
-                .setHeader(createHeader())
-                .setSubject(String.valueOf(user.getId()))
-                .setExpiration(new Date(now + REFRESH_EXPIRATION))
-                .signWith(REFRESH_SECRET, SignatureAlgorithm.HS256)
+                .setExpiration(new Date(now + EXPIRATION))
+                .signWith(SECRET, SignatureAlgorithm.HS256)
                 .compact();
     }
 
