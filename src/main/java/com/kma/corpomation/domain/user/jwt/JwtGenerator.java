@@ -13,7 +13,7 @@ import java.util.Map;
 @Component
 public class JwtGenerator {
 
-    public String generateToken(final Key SECRET, final long EXPIRATION, User user) {
+    public String generateJwtToken(final Key SECRET, final long EXPIRATION, User user) {
         Long now = System.currentTimeMillis();
 
         return Jwts.builder()

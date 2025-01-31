@@ -40,8 +40,8 @@ public class UserService {
 
         userRepository.save(user);
 
-        String accessToken = jwtGenerator.generateToken(jwtUtil.getSigningKey(ACCESS_SECRET_KEY), ACCESS_EXPIRATION, user);
-        String refreshToken = jwtGenerator.generateToken(jwtUtil.getSigningKey(REFRESH_SECRET_KEY), REFRESH_EXPIRATION, user);
+        String accessToken = jwtGenerator.generateJwtToken(jwtUtil.getSigningKey(ACCESS_SECRET_KEY), ACCESS_EXPIRATION, user);
+        String refreshToken = jwtGenerator.generateJwtToken(jwtUtil.getSigningKey(REFRESH_SECRET_KEY), REFRESH_EXPIRATION, user);
 
         saveToken(accessToken, refreshToken);
 
@@ -56,8 +56,8 @@ public class UserService {
         var user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new Exception("이메일이 정확하지 않습니다."));
 
-        String accessToken = jwtGenerator.generateToken(jwtUtil.getSigningKey(ACCESS_SECRET_KEY), ACCESS_EXPIRATION, user);
-        String refreshToken = jwtGenerator.generateToken(jwtUtil.getSigningKey(REFRESH_SECRET_KEY), REFRESH_EXPIRATION, user);
+        String accessToken = jwtGenerator.generateJwtToken(jwtUtil.getSigningKey(ACCESS_SECRET_KEY), ACCESS_EXPIRATION, user);
+        String refreshToken = jwtGenerator.generateJwtToken(jwtUtil.getSigningKey(REFRESH_SECRET_KEY), REFRESH_EXPIRATION, user);
 
         saveToken(accessToken, refreshToken);
 
