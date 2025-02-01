@@ -11,6 +11,7 @@ import java.util.Base64;
 public class JwtUtil {
     public Key getSigningKey(String secretKey) {
         String encodedKey = encodeToBase64(secretKey);
+
         return Keys.hmacShaKeyFor(encodedKey.getBytes(StandardCharsets.UTF_8));
     }
 
