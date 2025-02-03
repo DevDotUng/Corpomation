@@ -46,6 +46,9 @@ public class UserServiceTest extends ApiTest {
         LoginRequest loginRequest = new LoginRequest("email@naver.com", "1234");
         LoginResponse loginResponse = userService.login(loginRequest);
 
+        Assert.hasText(registerResponse.getAccessToken(), "엑세스 토큰이 없습니다.");
+        Assert.hasText(registerResponse.getRefreshToken(), "리프레시 토큰이 없습니다.");
+
         Assert.hasText(loginResponse.getAccessToken(), "엑세스 토큰이 없습니다.");
         Assert.hasText(loginResponse.getRefreshToken(), "리프레시 토큰이 없습니다.");
     }
