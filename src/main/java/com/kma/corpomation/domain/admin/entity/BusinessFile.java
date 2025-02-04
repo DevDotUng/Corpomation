@@ -1,5 +1,6 @@
 package com.kma.corpomation.domain.admin.entity;
 
+import com.kma.corpomation.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -31,6 +32,10 @@ public class BusinessFile {
 
     @CreationTimestamp
     private LocalDateTime createAt;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public BusinessFile(final String manager, final String business, final String fileUrl) {
         Assert.hasText(manager, "담당자는 필수입니다.");
