@@ -20,7 +20,6 @@ public class AdminController {
     @GetMapping("/index")
     public String admin(Model model) {
         List<FileResponse> fileResponseList = fileService.getFiles();
-
         model.addAttribute("files", fileResponseList);
 
         return "index";
