@@ -17,7 +17,7 @@ public class AdminController {
     @Autowired
     private FileService fileService;
 
-    @GetMapping("/index")
+    @GetMapping("")
     public String admin(Model model) {
         List<FileResponse> fileResponseList = fileService.getFiles();
         model.addAttribute("files", fileResponseList);
